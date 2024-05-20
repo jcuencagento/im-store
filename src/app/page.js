@@ -8,12 +8,13 @@ import logo from '../../public/pixel_gif.gif';
 const LoginPage = () => {
     const [loggedInUser, setLoggedInUser] = useState(null);
     const [email, setEmail] = useState("");
+    const [emailError, setEmailError] = useState(true);
+    const [pwdError, setPwdError] = useState(true);
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
 
     const login = async (email, password) => {
-        console.log(account);
-        console.log(account.get());
+        await account.deleteSession("current");
         const session = await account.createEmailPasswordSession(email, password);
         setLoggedInUser(await account.get());
     };
@@ -21,6 +22,23 @@ const LoginPage = () => {
     const register = async () => {
         await account.create(ID.unique(), email, password, name);
         login(email, password);
+    };
+
+    const validateEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!regex.test(email)) {
+            setEmailError(true);
+        } else {
+            setEmailError(false);
+        }
+    };
+
+    const validatePassword = (pwd) => {
+        if (pwd.length < 1 || pwd.length > 255) {
+            setPwdError(true);
+        } else {
+            setPwdError(false);
+        }
     };
 
     const logout = async () => {
@@ -54,7 +72,7 @@ const LoginPage = () => {
             <form className="flex flex-col m-auto gap-4">
                 <input
                     type="text"
-                    placeholder="Name"
+                    placeholder="Name (optional)"
                     className="p-2 rounded-lg text-black"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -64,23 +82,34 @@ const LoginPage = () => {
                     placeholder="Email"
                     className="p-2 rounded-lg text-black"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                        validateEmail(e.target.value);
+                        setEmail(e.target.value);
+                    }}
                 />
                 <input
                     type="password"
                     placeholder="Password"
                     className="p-2 rounded-lg text-black"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                        validatePassword(e.target.value);
+                        setPassword(e.target.value);
+                    }}
                 />
-                <button type="button" className="bg-green-300 text-black font-semibold p-2 rounded-xl transform-gpu duration-300 hover:bg-green-400" onClick={() => login(email, password)}>
+                <button
+                    type="button"
+                    className={emailError || pwdError ? "bg-green-200/80 text-gray-500 font-semibold p-2 rounded-xl" : "bg-green-300 text-black font-semibold p-2 rounded-xl transform-gpu duration-300 hover:bg-green-400"}
+                    disabled={emailError || pwdError}
+                    onClick={() => login(email, password)}>
                     Login
                 </button>
-                <button type="button" className="bg-blue-300 text-black font-semibold p-2 rounded-xl transform-gpu duration-300 hover:bg-blue-400" onClick={register}>
+                <button
+                    type="button"
+                    className={emailError || pwdError ? "bg-blue-200/80 text-gray-500 font-semibold p-2 rounded-xl" : "bg-blue-300 text-black font-semibold p-2 rounded-xl transform-gpu duration-300 hover:bg-blue-400"}
+                    disabled={emailError || pwdError}
+                    onClick={register}>
                     Register
-                </button>
-                <button type="button" className="bg-red-500 text-black font-semibold p-2 rounded-xl transform-gpu duration-300 hover:bg-red-600" onClick={logout}>
-                    Logout
                 </button>
             </form>
         </div>
