@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { account, ID } from "./appwrite";
+import Store from "@/components/Store";
 import logo from '../../public/pixel_gif.gif';
 
 const LoginPage = () => {
@@ -29,13 +30,18 @@ const LoginPage = () => {
 
     if (loggedInUser) {
         return (
-            <div className="flex flex-col m-auto gap-8 bg-slate-400 text-gray-900 font-bold">
-                <div className="flex flex-col m-auto gap-4" >
-                    <Image className="py-6 m-auto" alt="Logo" src={logo} />
-                    <p className="m-auto">Logged in as {loggedInUser.name}</p>
-                    <button type="button" className="bg-red-500 text-black font-semibold p-2 rounded-xl transform-gpu duration-300 hover:bg-red-600" onClick={logout}>
-                        Logout
-                    </button>
+            <div className="flex flex-col min-h-screen m-auto gap-8 bg-slate-400 text-gray-900 font-bold">
+                <div className="flex flex-col m-auto gap-4 w-full" >
+                    <div className="flex justify-end gap-4 mt-8 w-full">
+                        <p className="my-auto">Logged in as {loggedInUser?.name}</p>
+                        <button type="button" className="bg-red-500 text-black font-semibold p-2 mr-12 rounded-xl transform-gpu duration-300 hover:bg-red-600" onClick={logout}>
+                            Logout
+                        </button>
+                    </div>
+                    <Image className="m-auto" alt="Logo" src={logo} />
+                </div>
+                <div className="flex-grow w-full">
+                    <Store />
                 </div>
             </div>
         );
@@ -72,6 +78,9 @@ const LoginPage = () => {
                 </button>
                 <button type="button" className="bg-blue-300 text-black font-semibold p-2 rounded-xl transform-gpu duration-300 hover:bg-blue-400" onClick={register}>
                     Register
+                </button>
+                <button type="button" className="bg-red-500 text-black font-semibold p-2 rounded-xl transform-gpu duration-300 hover:bg-red-600" onClick={logout}>
+                    Logout
                 </button>
             </form>
         </div>
