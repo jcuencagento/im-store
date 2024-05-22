@@ -14,9 +14,20 @@ const LoginPage = () => {
     const [name, setName] = useState("");
 
     const login = async (email, password) => {
-        await account.deleteSession("current");
-        const session = await account.createEmailPasswordSession(email, password);
-        setLoggedInUser(await account.get());
+        account.createEmailPasswordSession(email, password)
+            .then(async session => {
+                setLoggedInUser(await account.get());
+            })
+            .catch(async error => {
+                if (error.toString().includes('Creation of a session is prohibited when a session is active')) {
+                    await account.deleteSession("current");
+                    await account.createEmailPasswordSession(email, password);
+                    setLoggedInUser(await account.get());
+                } else {
+                    console.error('Error creating session:', error);
+                }
+            });
+
     };
 
     const register = async () => {
@@ -61,13 +72,17 @@ const LoginPage = () => {
                 <div className="flex-grow w-full">
                     <Store />
                 </div>
+                <footer className="flex">
+                    <p className="text-black font-semibold m-auto my-4">
+                        Javier Cuenca Gento - 2024
+                    </p>
+                </footer>
             </div>
         );
     }
 
     return (
         <div className="flex flex-col m-auto gap-8 bg-slate-400">
-            <Image className="py-6 m-auto" alt="Logo" src={logo} />
             <p className="p-8 text-2xl m-auto text-gray-900 font-bold">Not logged in</p>
             <form className="flex flex-col m-auto gap-4">
                 <input
@@ -80,6 +95,7 @@ const LoginPage = () => {
                 <input
                     type="email"
                     placeholder="Email"
+                    autoComplete="username"
                     className="p-2 rounded-lg text-black"
                     value={email}
                     onChange={(e) => {
@@ -89,6 +105,7 @@ const LoginPage = () => {
                 />
                 <input
                     type="password"
+                    autoComplete="current-password"
                     placeholder="Password"
                     className="p-2 rounded-lg text-black"
                     value={password}
@@ -112,6 +129,18 @@ const LoginPage = () => {
                     Register
                 </button>
             </form>
+            <div className="flex flex-row py-2 m-auto" >
+                <h2 className="m-auto mb-4 justify-center text-slate-800 font-extrabold text-4xl">Im Store</h2>
+                <Image className="m-auto justify-center" alt="Logo" src={logo} />
+            </div>
+            <div className="flex-grow w-full text-black">
+                <Store />
+            </div>
+            <footer className="flex">
+                <p className="text-black font-semibold m-auto my-4">
+                    Javier Cuenca Gento - 2024
+                </p>
+            </footer>
         </div>
     );
 };

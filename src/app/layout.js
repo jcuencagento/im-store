@@ -12,11 +12,6 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en" className="h-screen bg-slate-400">
             <body className={inter.className}>{children}</body>
-            <footer className="flex">
-                <p className="text-black font-semibold m-auto my-4">
-                    Javier Cuenca Gento - 2024
-                </p>
-            </footer>
         </html>
     );
 }
